@@ -1,0 +1,5 @@
+<?jelly escape-by-default='true'?>
+<!-- View rendered on the Plugin Manager/plugins page -->
+<div>
+  Lists the branches of a BitBucket git repository
+</div>

@@ -1,0 +1,18 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:sl="/alexbrjo/list_bitbucket_branches">
+  <f:section title="${%List BitBucket Branches for a Git Repo}">
+      <f:entry title="${%BitBucket Username}" help="">
+        <f:textbox field="username" />
+      </f:entry>
+
+      <f:entry title="${%Git Repository}" help="">
+        <f:textbox field="repo" />
+      </f:entry>
+
+      <f:validateButton
+         title="${%List Branches}" progress="${%Testing...}"
+         method="getBranches" with="username,repo" />
+
+      ${it.branches}
+  </f:section>
+</j:jelly>
