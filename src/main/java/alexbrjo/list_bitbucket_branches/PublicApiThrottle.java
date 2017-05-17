@@ -16,6 +16,8 @@ public class PublicApiThrottle<E> {
 
     /** The list of calls */
     private List<ApiCall> calls;
+    /** The maximum number of calls per interval */
+    private int callLimit;
     /** The interval to track calls */
     private int interval;
 
@@ -51,11 +53,36 @@ public class PublicApiThrottle<E> {
         }
 
 
-        calls = new LinkedList<>();
+        calls = new LinkedList<ApiCall>();
+        this.callLimit = callLimit;
+        this.interval = interval;
     }
 
-    public boolean isCallAllowed(){ return true; }
-    public void logCall(E call){}
+    /**
+     * Determines if a call is allowed.
+     * @return if a call is allowed
+     */
+    public boolean isCallAllowed(){
+        prune();
+        return calls.size() < callLimit;
+    }
+
+    /**
+     * Adds an API call to the list
+     * @param call the object that is being used to store the API response
+     */
+    public void logCall(E call){
+        prune();
+        calls.add(new ApiCall(call));
+    }
+
+    /**
+     * Removes calls outside of interval
+     */
+    private void prune () {
+        while (!calls.isEmpty() && calls.get(0).time + interval < System.currentTimeMillis())
+            calls.remove(0);
+    }
 
     /**
      * A single call to an Api
