@@ -1,10 +1,16 @@
-package alexbrjo.list_bitbucket_branches;
+package alexbrjo.list_bitbucket_branches.api;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Controls the BitBucket API call, response parsing and Jelly UI generation.
@@ -18,6 +24,9 @@ public class BitBucketApiHandler {
     /** Static api throttler so the request limit is never exceeded */
     private PublicApiThrottle<Object> throttle;
 
+    /**
+     * Constructs a new BitBucketApiHandler
+     */
     public BitBucketApiHandler (){
         throttle = new PublicApiThrottle<Object>(500);
     }
@@ -27,9 +36,9 @@ public class BitBucketApiHandler {
      *
      * @param username the username of the repository's owner
      * @param repo the repository to list the branches of, must be Git
-     * @return tmp string
+     * @return string for branches from a BitBucket repository
      */
-    public String getBranches (String username, String repo) {
+    public List<String> getBranches (String username, String repo) {
         // Call public BitBucket API
         // Parse results using Jackson
         // Generate list of branches and display with jelly
@@ -39,10 +48,38 @@ public class BitBucketApiHandler {
         if (!throttle.isCallAllowed())
             throw new CallLimitExceededException();
 
+        String response;
         try {
-            return makeRequest(QUERY.replace("{USER}", username).replace("{REPO}", repo));
+            response = makeRequest(QUERY.replace("{USER}", username).replace("{REPO}", repo));
         } catch (IOException ex) {
             throw new IllegalArgumentException("Request Exception: " + ex.getMessage());
+        }
+
+        LinkedList<String> branches = new LinkedList<>(); // the list of branches
+        JsonParser p;
+        boolean waitForName = false;
+        try {
+            p = (new JsonFactory()).createParser(response);
+
+            // Iterate through all the JSON tokens
+            while (!p.isClosed()) {
+                JsonToken field = p.nextToken();
+                if (JsonToken.FIELD_NAME.equals(field)) { // if the token is a field name
+                    String fieldName = p.getCurrentName();
+                    p.nextToken(); // skip next token
+
+                    if ("type".equals(fieldName) && (p.getValueAsString()).contains("branch")) {
+                        waitForName = true;
+                    } else if (waitForName && "name".equals(fieldName)) {
+                        branches.add(p.getValueAsString() + " ");
+                        waitForName = false;
+                    }
+                }
+            }
+
+            return branches;
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("JSON parsing exception: " + ex.getMessage());
         }
     }
 
@@ -68,10 +105,9 @@ public class BitBucketApiHandler {
         }
         in.close();
 
-        // do this better
+        // TODO: log more than string
         throttle.logCall(json.toString());
 
         return json.toString();
     }
-
 }

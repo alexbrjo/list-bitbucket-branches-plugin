@@ -3,5 +3,6 @@
 
 /.idea
 /target
+/work
 
 *.iml

@@ -1,8 +1,27 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:s="/lib/samples">
-  <l:layout title="UI Samples">
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <l:layout title="List BitBucket Branches">
     <l:main-panel>
-        ${it.displayName}
+
+      <h1>${it.displayName}</h1>
+      <h3>Expected:</h3>
+      <p>${it.listBranches}</p>
+      <h3>Actual:</h3>
+
+      <form>
+        <table>
+          <f:entry title="${%BitBucket Username}">
+            <f:textbox field="username" />
+          </f:entry>
+          <f:entry title="${%Git Repository}">
+            <f:textbox field="repo" />
+          </f:entry>
+          <f:validateButton
+             title="${%Get Branches}" progress="${%Waiting...}"
+             method="getListBranches" with="username,repo" />
+        </table>
+      </form>
+
     </l:main-panel>
   </l:layout>
 </j:jelly>

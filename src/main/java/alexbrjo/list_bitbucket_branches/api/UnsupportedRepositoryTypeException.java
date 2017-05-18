@@ -1,4 +1,4 @@
-package alexbrjo.list_bitbucket_branches;
+package alexbrjo.list_bitbucket_branches.api;
 
 /**
  * If a user tries to load a repository from an SCM type other than Git
@@ -8,7 +8,7 @@ package alexbrjo.list_bitbucket_branches;
 public class UnsupportedRepositoryTypeException extends RuntimeException {
 
     public UnsupportedRepositoryTypeException () {
-        super("The specified repository SCM type is not supported by this Plugin ");
+        super("The specified repository SCM type is not supported by this Plugin");
     }
 
 }

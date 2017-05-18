@@ -1,4 +1,4 @@
-package alexbrjo.list_bitbucket_branches;
+package alexbrjo.list_bitbucket_branches.api;
 
 /**
  * Thrown when the Public Api call limit is exceeded

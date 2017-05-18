@@ -1,4 +1,4 @@
-package alexbrjo.list_bitbucket_branches;
+package alexbrjo.list_bitbucket_branches.api;
 
 import java.util.LinkedList;
 import java.util.List;
