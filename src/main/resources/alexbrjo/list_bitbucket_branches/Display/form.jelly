@@ -12,7 +12,5 @@
       <f:validateButton
          title="${%List Branches}" progress="${%Testing...}"
          method="listBranches" with="username,repo" />
-
-      ${it.branches}
   </f:section>
 </j:jelly>
